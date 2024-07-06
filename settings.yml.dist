@@ -1,0 +1,11 @@
+playlists:
+  list:
+    io: spreadsheet.ods
+    sheet_name: Sheet1
+    header: 0
+    index_col: 1
+    usecols: A:E
+    skiprows:
+    parse_dates: ["Date"]
+    url: https://www.youtube.com/playlist?list=
+    enabled: true
