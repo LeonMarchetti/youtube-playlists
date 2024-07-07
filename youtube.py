@@ -2,32 +2,26 @@
 
 PlayListItems: list: https://developers.google.com/youtube/v3/docs/playlistItems/list?hl=es-419
 """
-import json
-import requests
 import pandas as pd
+import googleapiclient.discovery
 
 
-def make_url(playlist_id: str | None, api_key: str | None, max_results: str | None, token=""):
-    """ Creates the URL string for fetching the playlist videos """
-    return "https://www.googleapis.com/youtube/v3/playlistItems?" \
-        + "part=snippet,status" \
-        + f"&playlistId={playlist_id}" \
-        + f"&key={api_key}" \
-        + f"&maxResults={max_results}" \
-        + (f"&pageToken={token}" if token else "")
-
-
-def get_playlist(url: str, make_url_func):
+def get_playlist(playlist_id: str, api_key: str):
     """ Obtains video playlist from YouTube API """
+    api = googleapiclient.discovery.build("youtube", "v3", developerKey=api_key)
+    api = api.playlistItems()
     videos = []
+    page_token: str = ""
     while True:
-        # request = requests.get(url, timeout=10, headers={"Authorization": "Bearer "})
-        request = requests.get(url, timeout=10)
-        data: dict = json.loads(request.text)
-        videos.extend(data["items"])
+        req = api.list(part="snippet,status",
+                       playlistId=playlist_id,
+                       maxResults="50",
+                       pageToken=page_token)
+        res = req.execute()
+        videos.extend(res["items"])
 
-        if "nextPageToken" in data:
-            url = make_url_func(data["nextPageToken"])
+        if "nextPageToken" in res:
+            page_token = res["nextPageToken"]
         else:
             break
     return videos

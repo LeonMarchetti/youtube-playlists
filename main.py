@@ -30,12 +30,11 @@ def cargar_df(playlist_id: str, cache: str | None = None):
         return pd.read_csv(cache, index_col=0)
 
     api_key = getenv('API_KEY')
-    max_results = getenv('MAX_RESULTS')
+    if not api_key:
+        print("No se cargó la API key (API_KEY)", file=sys.stderr)
+        sys.exit(1)
 
-    def make_url_func(token: str = "") -> str:
-        return youtube.make_url(playlist_id, api_key, max_results, token)
-
-    videos = youtube.get_playlist(make_url_func(), make_url_func)
+    videos = youtube.get_playlist(playlist_id, api_key)
     videos_df = youtube.make_df(videos)
     return videos_df
 
