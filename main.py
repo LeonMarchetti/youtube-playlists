@@ -79,10 +79,7 @@ def procesar_playlists(label: str, df_videos: pd.DataFrame, pl_conf):
 
     print()
     playlists.procesar_dataframe(df_excel, df_solo_excel, MSG_SOLO_EXCEL)
-    playlists.mostrar_faltantes(df_solo_excel)
-
     playlists.procesar_dataframe(df_videos, df_solo_yt, MSG_SOLO_YT)
-    playlists.mostrar_faltantes(df_solo_yt)
 
     timestamp = strftime("%Y-%m-%dT%H:%M:%S")
     csv_prefix = f"{(getenv('OUTPUT_PREFIX') or '')}/{label}.{timestamp}"
