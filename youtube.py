@@ -3,19 +3,26 @@
 PlayListItems: list: https://developers.google.com/youtube/v3/docs/playlistItems/list?hl=es-419
 """
 import pandas as pd
-import googleapiclient.discovery
+import googleapiclient.discovery as google_discovery
+
+MAX_RESULTS = "100"
+""" Amount of videos in each request's result """
+
+
+def get_client(api_key: str = None):
+    """ Gets the API client object to start requests """
+    return google_discovery.build("youtube", "v3", developerKey=api_key)
 
 
 def get_playlist(playlist_id: str, api_key: str):
     """ Obtains video playlist from YouTube API """
-    api = googleapiclient.discovery.build("youtube", "v3", developerKey=api_key)
-    api = api.playlistItems()
+    api = get_client(api_key).playlistItems()  # pylint: disable=no-member
     videos = []
     page_token: str = ""
     while True:
         req = api.list(part="snippet,status",
                        playlistId=playlist_id,
-                       maxResults="50",
+                       maxResults=MAX_RESULTS,
                        pageToken=page_token)
         res = req.execute()
         videos.extend(res["items"])
